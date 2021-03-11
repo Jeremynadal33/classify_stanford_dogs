@@ -16,15 +16,30 @@ def CLAHE_rgb(img):
   return new
 
 def predict_new(model, img_path, labels, input_shape = (442, 386)):
-    if type(model)== str : model = tf.keras.models.load_model(model)
+  
     img = plt.imread(img_path)
     img = CLAHE_rgb(img)
     img = tf.keras.preprocessing.image.smart_resize(img,input_shape)
     img = tf.expand_dims(img,0)
-    pred = model.predict(img)[0]
-    print('Predicted', labels[np.argmax(pred)].split('-')[-1], ': ', pred[np.argmax(pred)])
+    
+    pred = []
+    if model[-3:]=='.h5':
+      model = tf.keras.models.load_model(model)
+      pred = model.predict(img)[0]
+    elif model[-7:]=='.tflite':
+      interpreter = tf.lite.Interpreter(model_path = tflite_model_path)
+      interpreter.allocate_tensors()
+      input_details = interpreter.get_input_details()
+      output_details = interpreter.get_output_details()
 
-    #img = CLAHE_rgb(img)
+      interpreter.set_tensor(input_details[0]['index'], img)
+      interpreter.invoke()
+      pred = interpreter.get_tensor(output_details[0]['index'])[0]
+    else: 
+      print('Model type unknown. Muste be .h5 or .tflite')
+  
+
+    print('Predicted', labels[np.argmax(pred)].split('-')[-1], ': ', pred[np.argmax(pred)])
 
 if __name__ == "__main__":
     assert len(sys.argv) > 2, 'Please enter model path as arg 1 and path to img as arg 2 and label_path as arg 3 (if not in models/labels.txt)'
