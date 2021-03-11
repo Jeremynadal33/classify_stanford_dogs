@@ -2,14 +2,23 @@ import sys
 import os
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
+import cv2
 
+def CLAHE_rgb(img): 
+  clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
 
-def main():
-    print('r')
+  new = np.zeros(img.shape, dtype = float)
+  new[:,:,0] = clahe.apply(img[:,:,0])
+  new[:,:,1] = clahe.apply(img[:,:,1])
+  new[:,:,2] = clahe.apply(img[:,:,2])
+
+  return new
 
 def predict_new(model, img_path, labels, input_shape = (442, 386)):
     if type(model)== str : model = tf.keras.models.load_model(model)
-    img = tf.keras.preprocessing.image.load_img(img_path)
+    img = plt.imread(img_path)
+    img = CLAHE_rgb(img)
     img = tf.keras.preprocessing.image.smart_resize(img,input_shape)
     img = tf.expand_dims(img,0)
     pred = model.predict(img)[0]
