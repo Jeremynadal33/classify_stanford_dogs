@@ -27,7 +27,7 @@ if __name__ == "__main__":
     if os.path.exists(label_path) :
         labels = open(label_path, 'r').read().split('\n')[:-1]
         assert len(labels)==120, 'Careful, there should be 120 labels'
-    elif len(sys.argv>3):
+    elif len(sys.argv)>3:
         assert os.path.exists(sys.argv[3]), 'path given as arg 3 is doesnot exist'
         labels = open(sys.argv[3], 'r').read().split('\n')[:-1]
     else :
