@@ -27,7 +27,7 @@ def predict_new(model, img_path, labels, input_shape = (442, 386)):
       model = tf.keras.models.load_model(model)
       pred = model.predict(img)[0]
     elif model[-7:]=='.tflite':
-      interpreter = tf.lite.Interpreter(model_path = tflite_model_path)
+      interpreter = tf.lite.Interpreter(model_path = model_path)
       interpreter.allocate_tensors()
       input_details = interpreter.get_input_details()
       output_details = interpreter.get_output_details()
